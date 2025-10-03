@@ -1,4 +1,3 @@
-
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
 local act = wezterm.action
@@ -24,6 +23,10 @@ config.use_fancy_tab_bar = false
 
 -- Colors
 config.color_scheme = 'One Half Black (Gogh)'
+
+-- Cursor style
+config.default_cursor_style = "BlinkingBlock"
+config.cursor_blink_rate = 500 -- blink every 500ms
 
 -- Start centered at 80% of screen
 wezterm.on("gui-startup", function(cmd)
@@ -65,9 +68,35 @@ config.keys = {
   -- Tabs
   {key="t", mods="CTRL|SHIFT", action=act.SpawnTab("DefaultDomain")},
   {key="q", mods="CTRL|SHIFT", action=act.CloseCurrentTab{confirm=true}},
+
+  -- Clipboard (keyboard)
+  {key="c", mods="CTRL|SHIFT", action=act.CopyTo("Clipboard")},
+  {key="v", mods="CTRL|SHIFT", action=act.PasteFrom("Clipboard")},
+
+  -- Start Window Drag
+  {key="d", mods="CTRL|SHIFT", action=act.StartWindowDrag},
+}
+
+-- Mouse bindings
+config.mouse_bindings = {
+  -- Right-click paste
+  {
+    event={Down={streak=1, button="Right"}},
+    mods="NONE",
+    action=act.PasteFrom("Clipboard"),
+  },
+  -- Ctrl + Left drag = select and copy on release
+  {
+    event={Drag={streak=1, button="Left"}},
+    mods="CTRL",
+    action=act.ExtendSelectionToMouseCursor("Cell"),
+  },
+  {
+    event={Up={streak=1, button="Left"}},
+    mods="CTRL",
+    action=act.CopyTo("ClipboardAndPrimarySelection"),
+  },
 }
 
 -- Return configuration
 return config
-
-
